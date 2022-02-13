@@ -7,13 +7,22 @@ STATUS_CHOICES = (
     ('signed-out', 'signed-out'),
     ('passive', 'passive'),
 )
+class Device(models.Model):
+    serial_no = models.CharField(max_length=12)
+    type = models.CharField(max_length=50)
+    model = models.CharField(max_length=100)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.serial_no
 
 class Student(models.Model):
     adm_no = models.CharField(max_length=10,primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     Major = models.CharField(max_length=100)
+    devices = models.ManyToManyField(Device, related_name="devices", blank=True)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES)
     updated_at =   models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,16 +30,7 @@ class Student(models.Model):
     def __str__(self):
         return self.adm_no
 
-class Device(models.Model):
-    serial_no = models.CharField(max_length=12)
-    type = models.CharField(max_length=50)
-    model = models.CharField(max_length=100)
-    owner = models.ForeignKey(Student, on_delete=models.CASCADE)
-    updated_at =   models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.adm_no
 
 class Checkin(models.Model):
     adm_no = models.ForeignKey(Student, on_delete=models.CASCADE)

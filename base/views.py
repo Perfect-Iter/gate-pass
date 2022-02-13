@@ -1,8 +1,9 @@
 from django.shortcuts import render
 
 from django.http import Http404
-from base.models import Student
-from base.serializers import StudentSerializer, StudentSerializerForm
+from base.models import Device, Student
+from base.serializers import StudentSerializer, StudentSerializerDevice
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -17,9 +18,33 @@ class StudentList(APIView):
         return Response(serializer.data)
     
     def post(self, request, format = None):
-        serializer = StudentSerializerForm(data=request.data)
+        data = request.data 
+        serializer = StudentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class StudentDevice(APIView):
+
+    def get(self, request, pk, format=None):
+        student = Student.objects.get(pk=pk)
+        serializer = StudentSerializerDevice(student)
+
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        student = Student.objects.get(pk=pk)
+        serializer = StudentSerializerDevice(student, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    
+            
+
